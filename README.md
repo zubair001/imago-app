@@ -72,12 +72,21 @@ docker-compose up --build
 
 ```sh
 imago-app/
-│── backend/              # NestJS backend service
-│── frontend/             # Frontend UI (for API interaction)
-│── docker-compose.yml    # Containerized setup
-│── .env                  # Environment variables
-│── README.md             # Documentation
-│── .gitignore            # Git ignore file
+│── backend/               # Backend service (NestJS)
+│   │── src/               # Source code for backend
+│   │── .env               # Backend-specific environment variables
+│   │── package.json       # Backend dependencies
+│   └── README.md          # Backend documentation
+│
+│── frontend/              # Frontend UI (for API interaction)
+│   │── src/               # Source code for frontend
+│   │── .env               # Frontend-specific environment variables
+│   │── package.json       # Frontend dependencies
+│   └── README.md          # Frontend documentation
+│
+│── docker-compose.yml     # Docker Compose setup
+│── README.md              # Main project documentation
+│── .gitignore             # Git ignore file
 ```
 
 ## 🚀 API Documentation
@@ -86,21 +95,3 @@ This project uses **Swagger** for API documentation.
 Once the backend is running, visit:
 
 📌 **Swagger UI**: [http://localhost:5000/api](http://localhost:5000/api)
-
-## 📜 License
-
-This project is licensed under the **MIT License**.
-
----
-
-### 🤝 Contact
-
-For questions or contributions, feel free to reach out via **GitHub Issues** or contact the project maintainers.
-
----
-
-⭐ **If you find this project useful, please consider starring the repo!** 🚀
-
-```
-
-```
