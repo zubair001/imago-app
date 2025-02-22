@@ -7,13 +7,13 @@ interface SearchBarProps {
 
 const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   const [query, setQuery] = useState("");
-  const [date1, setDate1] = useState("");
-  const [date2, setDate2] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [sortBy, setSortBy] = useState<"asc" | "desc">("desc");
 
   const handleSearch = async () => {
     if (!query.trim()) return; // Prevent empty searches
-    const results = await searchMedia(query, date1, date2, sortBy);
+    const results = await searchMedia(query, startDate, endDate, sortBy);
     console.log("Search results:", results);
     onSearch(results);
   };
@@ -40,16 +40,16 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
       {/* Start Date */}
       <input
         type="date"
-        value={date1}
-        onChange={(e) => setDate1(e.target.value)}
+        value={startDate}
+        onChange={(e) => setStartDate(e.target.value)}
         className="date-input"
       />
 
       {/* End Date */}
       <input
         type="date"
-        value={date2}
-        onChange={(e) => setDate2(e.target.value)}
+        value={endDate}
+        onChange={(e) => setEndDate(e.target.value)}
         className="date-input"
       />
 

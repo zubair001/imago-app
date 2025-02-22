@@ -15,8 +15,8 @@ export interface MediaResponse {
 
 export const searchMedia = async (
   query: string,
-  dateCreated1?: string,
-  dateCreated2?: string,
+  startDate?: string,
+  endDate?: string,
   sortBy: "asc" | "desc" = "desc",
   page: number = 0,
   size: number = 10
@@ -25,8 +25,8 @@ export const searchMedia = async (
     const response = await axios.get<MediaResponse[]>(`${API_URL}`, {
       params: {
         querystring: query,
-        dateCreated1,
-        dateCreated2,
+        startDate,
+        endDate,
         sortBy,
         page,
         size,
