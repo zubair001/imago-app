@@ -3,28 +3,13 @@ import SearchBar from "./components/SearchBar/searchBar";
 import ImageTile from "./components/ImageTile/ImageTile";
 import "./App.css";
 
-interface Image {
-  id: string;
-  title: string;
-  date: string;
-  description: string;
-  height: number;
-  width: number;
-  photographer: string;
-  source: string;
-}
+import { MediaResponse, SearchResponse } from "./interfaces/interfaces";
 
 const App = () => {
-  const [images, setImages] = useState<Image[]>([]);
+  const [images, setImages] = useState<MediaResponse[]>([]);
 
-  const handleSearch = (data: Image[]) => {
-
-    if (!Array.isArray(data)) {
-      console.error("Invalid response format:", data);
-      return;
-    }
-
-    setImages(data);
+  const handleSearch = (data: SearchResponse<MediaResponse>) => {
+    setImages(data.results);
   };
 
   return (

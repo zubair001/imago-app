@@ -6,11 +6,13 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { ApiResponse, ApiOperation, ApiQuery } from '@nestjs/swagger';
+import { ApiResponse, ApiOperation, ApiBody } from '@nestjs/swagger';
 import { PinoLogger } from 'nestjs-pino';
-import { SearchMediaDto } from './dto/media.dto';
+import { MediaQueryDto } from './dto/mediaQuery.dto';
 import { MediaService } from './media.service';
-import { MediaResponse } from 'src/interfaces/media.interface';
+import { SearchResponseDTO } from './dto/searchResponse.dto';
+import { MediaResponseDto } from './dto/mediaResponse.dto';
+import { LOG_MESSAGES } from '../logger/logMessages';
 
 @Controller('media')
 export class MediaController {
@@ -30,10 +32,10 @@ export class MediaController {
   async checkHealth() {
     try {
       const result = await this.mediaService.checkElasticsearchConnection();
-      this.logger.info('Health check result:', result);
+      this.logger.info(LOG_MESSAGES.healthCheck.success, result);
       return result;
     } catch (error) {
-      this.logger.error('Error checking Elasticsearch connection', error.stack);
+      this.logger.error(LOG_MESSAGES.healthCheck.failure, error.stack);
       throw error;
     }
   }
@@ -41,36 +43,6 @@ export class MediaController {
   @Get('search')
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
   @ApiOperation({ summary: 'Search media records' })
-  @ApiQuery({
-    name: 'querystring',
-    required: true,
-    description: 'Search keyword',
-  })
-  @ApiQuery({
-    name: 'startDate',
-    required: false,
-    description: 'Filter from this date (YYYY-MM-DD)',
-  })
-  @ApiQuery({
-    name: 'endDate',
-    required: false,
-    description: 'Filter until this date (YYYY-MM-DD)',
-  })
-  @ApiQuery({
-    name: 'sortBy',
-    required: false,
-    description: 'Sort results by field',
-  })
-  @ApiQuery({
-    name: 'page',
-    required: false,
-    description: 'Page number (default: 1)',
-  })
-  @ApiQuery({
-    name: 'size',
-    required: false,
-    description: 'Results per page (default: 10)',
-  })
   @ApiResponse({
     status: 200,
     description: 'Successful search results',
@@ -80,29 +52,24 @@ export class MediaController {
     description: 'Bad request - Missing required parameters',
   })
   @ApiResponse({ status: 500, description: 'Internal server error' })
+  @ApiBody({ type: [SearchResponseDTO<MediaResponseDto>] })
   async searchMedia(
-    @Query() searchMediaDto: SearchMediaDto,
-  ): Promise<MediaResponse[]> {
-    const { querystring, startDate, endDate, sortBy, page, size } =
-      searchMediaDto;
-    if (!querystring) {
-      this.logger.warn('Query parameter is required');
-      throw new BadRequestException('Query parameter is required');
+    @Query() searchMediaDto: MediaQueryDto,
+  ): Promise<SearchResponseDTO<MediaResponseDto>> {
+    if (!searchMediaDto.queryString) {
+      this.logger.warn(LOG_MESSAGES.search.missingQueryParam);
+      throw new BadRequestException('Query parameter is required', {
+        cause: new Error(),
+        description: 'Query parameter is required',
+      });
     }
 
     try {
-      const result = await this.mediaService.searchMedia(
-        querystring,
-        startDate,
-        endDate,
-        sortBy,
-        page,
-        size,
-      );
-      this.logger.info('Search completed successfully');
+      const result = await this.mediaService.searchMedia(searchMediaDto);
+      this.logger.info(LOG_MESSAGES.search.success);
       return result;
     } catch (error) {
-      this.logger.error('Error performing media search', error.stack);
+      this.logger.error(LOG_MESSAGES.search.failure, error.stack);
       throw error;
     }
   }

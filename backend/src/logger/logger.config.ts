@@ -14,7 +14,7 @@ export const pinoConfig = {
       process.env.NODE_ENV !== 'production'
         ? { target: 'pino-pretty', options: { colorize: true } }
         : undefined, // JSON for production
-    level: process.env.LOG_LEVEL || 'info', // Default level
+    level: process.env.LOG_LEVEL || 'info',
   },
   file: path.join(logDir, 'app.log'),
 };

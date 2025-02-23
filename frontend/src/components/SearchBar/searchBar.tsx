@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { searchMedia, MediaResponse } from "../../api/api";
+import { searchMedia } from "../../api/api";
+import { MediaResponse, SearchResponse } from "../../interfaces/interfaces";
 
 interface SearchBarProps {
-  onSearch: (data: MediaResponse[]) => void;
+  onSearch: (data: SearchResponse<MediaResponse>) => void;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
@@ -10,12 +11,36 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [sortBy, setSortBy] = useState<"asc" | "desc">("desc");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSearch = async () => {
     if (!query.trim()) return; // Prevent empty searches
-    const results = await searchMedia(query, startDate, endDate, sortBy);
-    console.log("Search results:", results);
-    onSearch(results);
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await searchMedia(
+        query,
+        startDate || "",
+        endDate || "",
+        sortBy || "asc",
+        1,
+        10
+      );
+      console.log("Search results:", response);
+      if (response) {
+        onSearch(response || []);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("An unknown error occurred");
+      }
+      console.error("Error fetching media.", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Handle the Enter key press
@@ -64,9 +89,16 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
       </select>
 
       {/* Search Button */}
-      <button onClick={handleSearch} className="search-button">
-        Search
+      <button
+        onClick={handleSearch}
+        className="search-button"
+        disabled={loading}
+      >
+        {loading ? "Searching..." : "Search"}
       </button>
+
+      {/* Error or Loading Message */}
+      {error && <p className="error-message">{error}</p>}
     </div>
   );
 };

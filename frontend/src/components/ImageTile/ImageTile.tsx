@@ -1,34 +1,23 @@
 import React from "react";
-
-interface Image {
-  id: string;
-  title: string;
-  date: string;
-  description: string;
-  height: number;
-  width: number;
-  photographer: string;
-  source: string;
-}
-
-interface ImageTileProps {
-  image: Image;
-}
+import { ImageTileProps } from "../../interfaces/interfaces";
 
 const ImageTile: React.FC<ImageTileProps> = ({ image }) => {
-  console.log("Image:", image);
-
   const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL;
-  const imageUrl = `${IMAGE_BASE_URL}${image.id}/s.jpg`;
-  const fallbackUrl = import.meta.env.VITE_FALLBACK_IMAGE_URL;
+  const FALLBACK_IMAGE_URL = import.meta.env.VITE_FALLBACK_IMAGE_URL;
+
+  // Ensure that we have a valid base URL for images
+  const imageUrl =
+    IMAGE_BASE_URL && image.id
+      ? `${IMAGE_BASE_URL}${image.id}/s.jpg`
+      : FALLBACK_IMAGE_URL;
 
   return (
     <div className="image-tile">
       <img
-        src={imageUrl || fallbackUrl}
+        src={imageUrl}
         alt={image.title}
         className="image"
-        onError={(e) => (e.currentTarget.src = fallbackUrl)}
+        onError={(e) => (e.currentTarget.src = FALLBACK_IMAGE_URL)}
       />
       <div className="image-overlay">
         <div className="image-details">
