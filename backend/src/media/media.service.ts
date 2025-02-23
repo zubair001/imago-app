@@ -129,7 +129,7 @@ export class MediaService {
               'breite',
               'db',
             ],
-            from: mediaQueryDto.page || 0,
+            from: mediaQueryDto.page || 1,
             size: mediaQueryDto.size || 10,
             sort: [{ datum: { order: mediaQueryDto.sortBy } }],
           },
